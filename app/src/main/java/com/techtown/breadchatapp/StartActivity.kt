@@ -5,12 +5,31 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import kotlin.math.log
 
 class StartActivity : AppCompatActivity() {
 
     lateinit var login : Button
     lateinit var register : Button
+
+
+    var auth : FirebaseAuth = FirebaseAuth.getInstance()
+    var firebaseUser : FirebaseUser? = auth.currentUser
+        override fun onStart() {
+        super.onStart()
+
+
+
+        if(firebaseUser != null){
+            var intent = Intent(this@StartActivity, MainActivity::class.java)
+            startActivity(intent)
+            finish()
+        }else{
+
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_start)
