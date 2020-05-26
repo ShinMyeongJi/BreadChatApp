@@ -7,7 +7,9 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -22,15 +24,41 @@ class MainActivity : AppCompatActivity() {
     lateinit var firebaseUser : FirebaseUser
     lateinit var reference : DatabaseReference
 
-
+    lateinit var userListFragment : Fragment
+    lateinit var chatListFragment : Fragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        userListFragment = Fragment()
+        chatListFragment = Fragment()
+
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setTitle("")
+
+        supportFragmentManager.beginTransaction().replace(R.id.container, userListFragment).commit()
+
+        var bottomNavigation = findViewById<BottomNavigationView>(R.id.main_navigation)
+        bottomNavigation.setOnNavigationItemSelectedListener(object :
+            BottomNavigationView.OnNavigationItemSelectedListener{
+            override fun onNavigationItemSelected(item: MenuItem): Boolean {
+                when(item.itemId){
+                    R.id.users_list -> {
+                        supportFragmentManager.beginTransaction().replace(R.id.container, userListFragment).commit()
+                        return true
+                    }
+                    R.id.chat_list -> {
+                        supportFragmentManager.beginTransaction().replace(R.id.container, chatListFragment).commit()
+                        return true
+                    }
+                }
+                return false
+            }
+        })
+
+
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)

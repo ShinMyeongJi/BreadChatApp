@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/users_list"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@drawable/ic_person_black_24dp"
+        android:title="친구목록"
+        />
+
+    <item
+        android:id="@+id/chat_list"
+        app:showAsAction="ifRoom"
+        android:enabled="true"
+        android:icon="@drawable/ic_chat_bubble_black_24dp"
+        android:title="대화목록"
+        />
+</menu>
