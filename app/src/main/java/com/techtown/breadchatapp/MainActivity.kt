@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
@@ -13,6 +14,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.techtown.breadchatapp.fragment.ChatListFragment
+import com.techtown.breadchatapp.fragment.UserListFragment
 import com.techtown.breadchatapp.model.User
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -24,21 +27,21 @@ class MainActivity : AppCompatActivity() {
     lateinit var firebaseUser : FirebaseUser
     lateinit var reference : DatabaseReference
 
-    lateinit var userListFragment : Fragment
-    lateinit var chatListFragment : Fragment
+    lateinit var userListFragment : UserListFragment
+    lateinit var chatListFragment : ChatListFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        userListFragment = Fragment()
-        chatListFragment = Fragment()
+        userListFragment = UserListFragment()
+        chatListFragment = ChatListFragment()
 
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setTitle("")
 
-        supportFragmentManager.beginTransaction().replace(R.id.container, userListFragment).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.container, userListFragment).commitAllowingStateLoss()
 
         var bottomNavigation = findViewById<BottomNavigationView>(R.id.main_navigation)
         bottomNavigation.setOnNavigationItemSelectedListener(object :
@@ -46,11 +49,11 @@ class MainActivity : AppCompatActivity() {
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
                 when(item.itemId){
                     R.id.users_list -> {
-                        supportFragmentManager.beginTransaction().replace(R.id.container, userListFragment).commit()
+                        supportFragmentManager.beginTransaction().replace(R.id.container, userListFragment).commitAllowingStateLoss()
                         return true
                     }
                     R.id.chat_list -> {
-                        supportFragmentManager.beginTransaction().replace(R.id.container, chatListFragment).commit()
+                        supportFragmentManager.beginTransaction().replace(R.id.container, chatListFragment).commitAllowingStateLoss()
                         return true
                     }
                 }
@@ -71,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                 var user = dataSnapShot.getValue(User::class.java)
                 userName.setText(user?.username)
                 if(user?.imageURL?.equals("default")!!){
-                    profile_img.setImageResource(R.mipmap.ic_launcher)
+                    profile_img.setImageResource(R.drawable.bread_no_img)
                 }else{
                     Glide.with(this@MainActivity).load(user?.imageURL).into(profile_img)
                 }
