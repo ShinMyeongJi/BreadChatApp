@@ -2,6 +2,7 @@ package com.techtown.breadchatapp.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -10,7 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.techtown.breadchatapp.R
 import com.techtown.breadchatapp.model.User
 import android.view.View
+import android.widget.Toast
 import com.bumptech.glide.Glide
+import com.techtown.breadchatapp.MessageActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
 class UserAdapter(val context : Context, val items : ArrayList<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>(){
@@ -27,15 +30,22 @@ class UserAdapter(val context : Context, val items : ArrayList<User>) : Recycler
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-          holder.bind(items[position], context)
+        holder.bind(items[position], context)
+        holder.itemView.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+                var intent = Intent(context, MessageActivity::class.java)
+                intent.putExtra("userId", items[position].id)
+                context.startActivity(intent)
+            }
+        })
     }
 
 
     class UserViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+
         var userImg = itemView.findViewById<CircleImageView>(R.id.profile_img)
         var userName = itemView.findViewById<TextView>(R.id.user_name)
 
-        @SuppressLint("ResourceType")
         fun bind(user : User, context : Context){
             userName.text = user.username
 
@@ -43,7 +53,6 @@ class UserAdapter(val context : Context, val items : ArrayList<User>) : Recycler
                 userImg.setImageResource(R.drawable.bread_no_img)
             else
                 Glide.with(context).load(user.imageURL).into(userImg)
-
         }
     }
 }

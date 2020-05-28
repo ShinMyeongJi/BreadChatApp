@@ -21,7 +21,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var profile_img : CircleImageView
+    lateinit var profileImg : CircleImageView
     lateinit var userName : TextView
 
     lateinit var firebaseUser : FirebaseUser
@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity() {
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
 
-        profile_img = findViewById(R.id.profile_img)
+        profileImg = findViewById(R.id.profile_img)
         userName = findViewById(R.id.user_name)
 
         reference.addValueEventListener(object : ValueEventListener{
@@ -74,9 +74,9 @@ class MainActivity : AppCompatActivity() {
                 var user = dataSnapShot.getValue(User::class.java)
                 userName.setText(user?.username)
                 if(user?.imageURL?.equals("default")!!){
-                    profile_img.setImageResource(R.drawable.bread_no_img)
+                    profileImg.setImageResource(R.drawable.bread_no_img)
                 }else{
-                    Glide.with(this@MainActivity).load(user?.imageURL).into(profile_img)
+                    Glide.with(this@MainActivity).load(user?.imageURL).into(profileImg)
                 }
             }
 
