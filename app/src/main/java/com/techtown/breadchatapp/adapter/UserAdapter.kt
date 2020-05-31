@@ -1,22 +1,19 @@
 package com.techtown.breadchatapp.adapter
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.techtown.breadchatapp.R
 import com.techtown.breadchatapp.model.User
 import android.view.View
-import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.techtown.breadchatapp.MessageActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
-class UserAdapter(val context : Context, val items : ArrayList<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>(){
+class UserAdapter(val context: Context?, val items: ArrayList<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>(){
 
 
 
@@ -30,12 +27,14 @@ class UserAdapter(val context : Context, val items : ArrayList<User>) : Recycler
     }
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
-        holder.bind(items[position], context)
+
+        holder.bind(items[position], context!!)
+
         holder.itemView.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 var intent = Intent(context, MessageActivity::class.java)
                 intent.putExtra("userId", items[position].id)
-                context.startActivity(intent)
+                context?.startActivity(intent)
             }
         })
     }

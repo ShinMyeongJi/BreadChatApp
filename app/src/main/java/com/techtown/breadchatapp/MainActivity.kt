@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
@@ -68,6 +69,13 @@ class MainActivity : AppCompatActivity() {
 
         profileImg = findViewById(R.id.profile_img)
         userName = findViewById(R.id.user_name)
+
+
+        profileImg.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+                startActivity(Intent(this@MainActivity, ProfileActivity::class.java))
+            }
+        })
 
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
