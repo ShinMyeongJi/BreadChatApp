@@ -13,7 +13,7 @@ import com.bumptech.glide.Glide
 import com.techtown.breadchatapp.MessageActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
-class UserAdapter(val context: Context?, val items: ArrayList<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>(){
+class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat : Boolean) : RecyclerView.Adapter<UserAdapter.UserViewHolder>(){
 
 
 
@@ -28,7 +28,21 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>) : RecyclerV
 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
 
+        val user = items[position]
         holder.bind(items[position], context!!)
+
+        if(ischat){
+            if(user.status.equals("online")){
+                holder.onlineImg.visibility = View.VISIBLE
+                holder.offlineImg.visibility = View.INVISIBLE
+            }else if(user.status.equals("offline")){
+                holder.onlineImg.visibility = View.INVISIBLE
+                holder.offlineImg.visibility = View.VISIBLE
+            }
+        }else{
+            holder.onlineImg.visibility = View.GONE
+            holder.offlineImg.visibility = View.GONE
+        }
 
         holder.itemView.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
@@ -44,6 +58,8 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>) : RecyclerV
 
         var userImg = itemView.findViewById<CircleImageView>(R.id.profile_img)
         var userName = itemView.findViewById<TextView>(R.id.user_name)
+        var onlineImg = itemView.findViewById<CircleImageView>(R.id.online)
+        var offlineImg = itemView.findViewById<CircleImageView>(R.id.offline)
 
         fun bind(user : User, context : Context){
             userName.text = user.username
@@ -52,6 +68,7 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>) : RecyclerV
                 userImg.setImageResource(R.drawable.bread_no_img)
             else
                 Glide.with(context).load(user.imageURL).into(userImg)
+
         }
     }
 }

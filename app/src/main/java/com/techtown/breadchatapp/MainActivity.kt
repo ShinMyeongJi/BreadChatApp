@@ -103,11 +103,28 @@ class MainActivity : AppCompatActivity() {
         when(item.itemId) {
             R.id.logout -> {
                 FirebaseAuth.getInstance().signOut()
-                startActivity(Intent(this@MainActivity, StartActivity::class.java))
-                finish()
+                startActivity(Intent(this@MainActivity, StartActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+               // finish()
                 return true
             }
         }
         return false
+    }
+
+    private fun status(status : String){
+        var hashMap : HashMap<String, Object> = HashMap()
+
+        hashMap.put("status", status as Object)
+        reference.updateChildren(hashMap as Map<String, Any>)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        status("online")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        status("offline")
     }
 }

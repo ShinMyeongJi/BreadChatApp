@@ -1,5 +1,6 @@
 package com.techtown.breadchatapp
 
+import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
 import android.net.Uri
@@ -12,9 +13,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import com.bumptech.glide.Glide
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -22,6 +21,7 @@ import com.google.firebase.storage.*
 
 import com.techtown.breadchatapp.model.User
 import de.hdodenhof.circleimageview.CircleImageView
+import java.lang.Exception
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -33,7 +33,7 @@ class ProfileActivity : AppCompatActivity() {
 
     lateinit var storageReference : StorageReference
     lateinit var imageURL : Uri
-    lateinit var uploadTask : StorageTask<UploadTask.TaskSnapshot>
+    var uploadTask : StorageTask<UploadTask.TaskSnapshot>? = null
     companion object{
         private val IMAGE_REQUEST = 1
     }
@@ -69,6 +69,7 @@ class ProfileActivity : AppCompatActivity() {
                 if(user?.imageURL.equals("default")){
                     profile_img.setImageResource(R.drawable.bread_no_img)
                 }else{
+                    Toast.makeText(this@ProfileActivity, user?.imageURL, Toast.LENGTH_SHORT).show()
                     Glide.with(this@ProfileActivity).load(user?.imageURL).into(profile_img)
                 }
             }
@@ -110,32 +111,47 @@ class ProfileActivity : AppCompatActivity() {
 
         if(imageURL != null){
             val fileReference = storageReference.child(System.currentTimeMillis().toString() + "." + getFileExtension(imageURL))
-            uploadTask = fileReference.getFile(imageURL) as UploadTask
-            uploadTask.continueWith(object : Continuation<UploadTask.TaskSnapshot, Task<Uri>>{
-                override fun then(task: Task<UploadTask.TaskSnapshot>): Task<Uri> {
-                    if(!task.isSuccessful){
-                        throw task.exception!!
-                    }
-                    return fileReference.downloadUrl
-                }
-            }).addOnCompleteListener(object : OnCompleteListener<Task<Uri>>{
-                override fun onComplete(task: Task<Task<Uri>>) {
-                    if(task.isSuccessful){
-                        var downloadUri = task.result
-                        var mUri = downloadUri.toString()
 
-                        referenece = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
-                        var map : HashMap<String, String> = HashMap()
-                        map.put("imageURl", mUri)
-                        referenece.updateChildren(map as Map<String, Any>)
+            uploadTask = fileReference.putFile(imageURL).addOnSuccessListener(object :
+                OnSuccessListener<UploadTask.TaskSnapshot> {
+                override fun onSuccess(task: UploadTask.TaskSnapshot?) {
+                    if(task?.task?.isSuccessful!!){
+                        fileReference.downloadUrl.addOnSuccessListener(object :
+                            OnSuccessListener<Uri>{
+                            override fun onSuccess(downloadUrl: Uri?) {
+                                referenece = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
+                                var map : HashMap<String, String> = HashMap()
+                                map.put("imageURL", downloadUrl.toString())
+                                referenece.updateChildren(map as Map<String, Any>)
 
-                        pd.dismiss()
+                                pd.dismiss()
+                            }
+                        }).addOnFailureListener(object : OnFailureListener{
+                            override fun onFailure(p0: Exception) {
+                                Toast.makeText(this@ProfileActivity, p0.toString(), Toast.LENGTH_SHORT).show()
+                            }
+                        })
                     }else{
-
+                        Toast.makeText(this@ProfileActivity, "Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
             })
+        }else{
+            Toast.makeText(this@ProfileActivity, "이미지가 없습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(requestCode == IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null){
+            imageURL = data.data!!
+
+            if(uploadTask != null && uploadTask?.isInProgress!!){
+                Toast.makeText(this@ProfileActivity, "업로드 중입니다.", Toast.LENGTH_SHORT).show()
+            }else{
+                uploadImage()
+            }
         }
     }
 }

@@ -47,7 +47,7 @@ class MessageActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
-                finish()
+                startActivity(Intent(this@MessageActivity, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             }
         })
 
@@ -135,5 +135,23 @@ class MessageActivity : AppCompatActivity() {
 
             }
         })
+    }
+
+    private fun status(status : String){
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
+        var hashMap : HashMap<String, Object> = HashMap()
+
+        hashMap.put("status", status as Object)
+        reference.updateChildren(hashMap as Map<String, Any>)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        status("online")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        status("offline")
     }
 }
