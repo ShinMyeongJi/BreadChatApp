@@ -27,5 +27,14 @@
         android:padding="8dp"
         android:layout_marginTop="15dp"
         />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/msgSeen"
+        android:visibility="gone"
+        android:text="읽음"
+        android:layout_below="@id/show_msg"
+        />
         
 </RelativeLayout>

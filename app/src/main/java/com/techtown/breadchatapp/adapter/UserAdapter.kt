@@ -1,5 +1,6 @@
 package com.techtown.breadchatapp.adapter
 
+import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
@@ -9,11 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.techtown.breadchatapp.R
 import com.techtown.breadchatapp.model.User
 import android.view.View
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
+import com.techtown.breadchatapp.MainActivity
 import com.techtown.breadchatapp.MessageActivity
+import com.techtown.breadchatapp.TestActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
-class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat : Boolean) : RecyclerView.Adapter<UserAdapter.UserViewHolder>(){
+class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat : Boolean, val requestManager : RequestManager) : RecyclerView.Adapter<UserAdapter.UserViewHolder>(){
 
 
 
@@ -29,7 +35,7 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
     override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
 
         val user = items[position]
-        holder.bind(items[position], context!!)
+        holder.bind(items[position], context!!, requestManager)
 
         if(ischat){
             if(user.status.equals("online")){
@@ -46,9 +52,11 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
 
         holder.itemView.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
+              //  Toast.makeText(context, items[position].toString(), Toast.LENGTH_SHORT).show()
                 var intent = Intent(context, MessageActivity::class.java)
                 intent.putExtra("userId", items[position].id)
-                context?.startActivity(intent)
+
+                context?.startActivity(intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             }
         })
     }
@@ -61,13 +69,15 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
         var onlineImg = itemView.findViewById<CircleImageView>(R.id.online)
         var offlineImg = itemView.findViewById<CircleImageView>(R.id.offline)
 
-        fun bind(user : User, context : Context){
+        fun bind(user : User, context : Context, requestManager : RequestManager){
             userName.text = user.username
 
             if(user.imageURL.equals("default"))
                 userImg.setImageResource(R.drawable.bread_no_img)
             else
-                Glide.with(context).load(user.imageURL).into(userImg)
+                requestManager.load(user.imageURL).into(userImg)
+
+            //Glide.with(context).load(user.imageURL).into(userImg)
 
         }
     }

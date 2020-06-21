@@ -37,6 +37,8 @@ class MessageActivity : AppCompatActivity() {
 
     lateinit var recyclerView : RecyclerView
 
+    lateinit var seenListener : ValueEventListener
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
@@ -88,7 +90,7 @@ class MessageActivity : AppCompatActivity() {
                 if(user?.imageURL.equals("default")){
                     profileImg.setImageResource(R.drawable.bread_no_img)
                 }else{
-                    Glide.with(this@MessageActivity).load(user?.imageURL).into(profileImg)
+                    Glide.with(applicationContext).load(user?.imageURL).into(profileImg)
                 }
                 readMessage(firebaseUser.uid, receiverId, user?.imageURL!!)
             }
@@ -97,7 +99,32 @@ class MessageActivity : AppCompatActivity() {
 
             }
         })
+
+        seenMessage(receiverId)
     }
+
+    private fun seenMessage(userId : String){
+        reference = FirebaseDatabase.getInstance().getReference("Chats")
+        seenListener = reference.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapShot: DataSnapshot) {
+                for(snapShot in dataSnapShot.children){
+                    var chat = snapShot.getValue(Chat::class.java)
+
+                    if(chat?.receiver.equals(firebaseUser.uid) && chat?.sender.equals(userId)){
+                        var hashMap : HashMap<String, Object> = HashMap()
+                        hashMap.put("isSeen", true as Object)
+                        snapShot.ref.updateChildren(hashMap as Map<String, Any>)
+                    }
+
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
+    }
+
 
     private fun sendMessage(sender : String, receiver : String, message : String){
         var reference = FirebaseDatabase.getInstance().getReference()
@@ -106,6 +133,7 @@ class MessageActivity : AppCompatActivity() {
         hashMap.put("sender", sender as Object)
         hashMap.put("receiver", receiver as Object)
         hashMap.put("message", message as Object)
+        hashMap.put("isSeen", false as Object)
 
         reference.child("Chats").push().setValue(hashMap)
     }
@@ -152,6 +180,7 @@ class MessageActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        reference.removeEventListener(seenListener)
         status("offline")
     }
 }

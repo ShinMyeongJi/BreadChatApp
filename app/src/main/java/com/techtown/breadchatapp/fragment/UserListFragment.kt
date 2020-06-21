@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -23,6 +25,8 @@ class UserListFragment : Fragment() {
     lateinit var userAdapter : UserAdapter
     lateinit var mUsers : ArrayList<User>
 
+    lateinit var mGlideRequestManager : RequestManager
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -33,6 +37,8 @@ class UserListFragment : Fragment() {
         recyclerView = view.findViewById(R.id.user_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(context)
+
+        mGlideRequestManager = Glide.with(this)
 
         mUsers = ArrayList()
 
@@ -58,7 +64,7 @@ class UserListFragment : Fragment() {
                     }
                 }
 
-                userAdapter = UserAdapter(context!!, mUsers, false)
+                userAdapter = UserAdapter(context, mUsers, false, mGlideRequestManager)
 
                 recyclerView.adapter = userAdapter
             }
@@ -69,5 +75,13 @@ class UserListFragment : Fragment() {
         })
     }
 
+    override fun onPause() {
+        super.onPause()
+        mUsers.clear()
+    }
 
+    override fun onResume() {
+        super.onResume()
+        mUsers.clear()
+    }
 }

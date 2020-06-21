@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -31,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var userListFragment : UserListFragment
     lateinit var chatListFragment : ChatListFragment
 
+    lateinit var mGlideRequestManager : RequestManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -38,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         userListFragment = UserListFragment()
         chatListFragment = ChatListFragment()
 
+        mGlideRequestManager = Glide.with(this@MainActivity)
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar?.setTitle("")
@@ -84,7 +88,8 @@ class MainActivity : AppCompatActivity() {
                 if(user?.imageURL?.equals("default")!!){
                     profileImg.setImageResource(R.drawable.bread_no_img)
                 }else{
-                    Glide.with(this@MainActivity).load(user?.imageURL).into(profileImg)
+                    mGlideRequestManager.load(user?.imageURL).into(profileImg)
+                    //Glide.with(this@MainActivity).load(user?.imageURL).into(profileImg)
                 }
             }
 

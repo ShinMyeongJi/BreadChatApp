@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -28,6 +30,8 @@ class ChatListFragment : Fragment() {
 
     lateinit var usersList : ArrayList<String>
 
+    lateinit var mGlideRequestManager : RequestManager
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -40,6 +44,8 @@ class ChatListFragment : Fragment() {
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
         reference = FirebaseDatabase.getInstance().getReference("Chats")
+
+        mGlideRequestManager = Glide.with(this)
 
         usersList = ArrayList()
 
@@ -94,7 +100,7 @@ class ChatListFragment : Fragment() {
                         }
                     }
                 }
-                userAdapter = UserAdapter(context, mUsers, true)
+                userAdapter = UserAdapter(context, mUsers, true, mGlideRequestManager)
                 recyclerView.adapter = userAdapter
             }
 

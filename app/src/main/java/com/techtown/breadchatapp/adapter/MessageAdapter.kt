@@ -16,6 +16,7 @@ import com.techtown.breadchatapp.R
 import com.techtown.breadchatapp.model.Chat
 import com.techtown.breadchatapp.model.User
 import de.hdodenhof.circleimageview.CircleImageView
+import org.w3c.dom.Text
 
 class MessageAdapter(
     var context: Context,
@@ -46,12 +47,27 @@ class MessageAdapter(
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
+        var chat = msgs.get(position)
+
         holder.bind(msgs.get(position), context, imgURL)
+
+        if(position == msgs.size-1){
+            Toast.makeText(context, chat.isSeen.toString(), Toast.LENGTH_SHORT).show()
+            if(chat.isSeen!!){
+                holder.isSeen.setText("읽음")
+            }else{
+                holder.isSeen.setText("안 읽음")
+            }
+        }else{
+            holder.isSeen.visibility = View.GONE
+        }
     }
 
     class MessageViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
         var message = itemView.findViewById<TextView>(R.id.show_msg)
         var profile_img = itemView.findViewById<CircleImageView>(R.id.profile_img)
+        var isSeen = itemView.findViewById<TextView>(R.id.msgSeen)
+
 
         fun bind(chat : Chat, context : Context, imgURL : String) {
 
@@ -61,6 +77,7 @@ class MessageAdapter(
             }else{
                 Glide.with(context).load(imgURL).into(profile_img)
             }
+
         }
     }
 
