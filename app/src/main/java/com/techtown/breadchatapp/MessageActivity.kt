@@ -112,7 +112,7 @@ class MessageActivity : AppCompatActivity() {
 
                     if(chat?.receiver.equals(firebaseUser.uid) && chat?.sender.equals(userId)){
                         var hashMap : HashMap<String, Object> = HashMap()
-                        hashMap.put("isSeen", true as Object)
+                        hashMap.put("seen", true as Object)
                         snapShot.ref.updateChildren(hashMap as Map<String, Any>)
                     }
 
@@ -133,7 +133,7 @@ class MessageActivity : AppCompatActivity() {
         hashMap.put("sender", sender as Object)
         hashMap.put("receiver", receiver as Object)
         hashMap.put("message", message as Object)
-        hashMap.put("isSeen", false as Object)
+        hashMap.put("seen", false as Object)
 
         reference.child("Chats").push().setValue(hashMap)
     }
@@ -146,11 +146,15 @@ class MessageActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapShot: DataSnapshot) {
                 mchat.clear()
                 for(snapShot in dataSnapShot.children){
+
                     var chat = snapShot.getValue(Chat::class.java)!!
+
                     if(
                         chat.receiver.equals(receiverId) && chat.sender.equals(myId) || //or와 ||가 뭐가 다른지;;;?
                         chat.receiver.equals(myId) && chat.sender.equals(receiverId)
                     ){
+                        Toast.makeText(this@MessageActivity, chat.receiver + chat.isSeen, Toast.LENGTH_SHORT).show()
+
                         mchat.add(chat)
                     }
                     messageAdapter = MessageAdapter(this@MessageActivity, mchat, imgURL)

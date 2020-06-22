@@ -1,8 +1,6 @@
 package com.techtown.breadchatapp.adapter
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.techtown.breadchatapp.R
 import com.techtown.breadchatapp.model.Chat
-import com.techtown.breadchatapp.model.User
 import de.hdodenhof.circleimageview.CircleImageView
-import org.w3c.dom.Text
 
 class MessageAdapter(
     var context: Context,
@@ -52,8 +48,8 @@ class MessageAdapter(
         holder.bind(msgs.get(position), context, imgURL)
 
         if(position == msgs.size-1){
-            Toast.makeText(context, chat.isSeen.toString(), Toast.LENGTH_SHORT).show()
-            if(chat.isSeen!!){
+           // Toast.makeText(context,chat.message + "  " + chat.isSeen.toString(), Toast.LENGTH_SHORT).show()
+            if(chat.isSeen){
                 holder.isSeen.setText("읽음")
             }else{
                 holder.isSeen.setText("안 읽음")
