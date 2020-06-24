@@ -136,6 +136,22 @@ class MessageActivity : AppCompatActivity() {
         hashMap.put("seen", false as Object)
 
         reference.child("Chats").push().setValue(hashMap)
+
+        val chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+            .child(firebaseUser.uid)
+            .child(receiver)
+
+        chatRef.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if(!dataSnapshot.exists()){
+                    chatRef.child("id").setValue(receiver);
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
     }
 
     private fun readMessage(myId : String, receiverId : String, imgURL : String){

@@ -56,6 +56,17 @@
             android:background="@drawable/rounded_btn"
             android:layout_marginTop="10dp"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="비밀번호 찾기"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="end"
+            android:textStyle="bold"
+            android:id="@+id/forgot_pwd"
+            android:textColor="@color/colorPrimaryDark"
+            ></TextView>
 
     </LinearLayout>
 

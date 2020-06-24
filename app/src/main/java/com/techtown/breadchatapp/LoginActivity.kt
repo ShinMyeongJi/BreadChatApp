@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.TextUtils
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.google.android.gms.tasks.OnCompleteListener
@@ -20,6 +21,7 @@ class LoginActivity : AppCompatActivity() {
     lateinit var userPwd : MaterialEditText
 
     lateinit var loginBtn : Button
+    lateinit var forgot_pwd : TextView
 
     lateinit var auth : FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +37,15 @@ class LoginActivity : AppCompatActivity() {
         userPwd = findViewById(R.id.user_pwd)
 
         loginBtn = findViewById(R.id.login_btn)
+
+        forgot_pwd = findViewById(R.id.forgot_pwd)
+
+        forgot_pwd.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(v: View?) {
+                startActivity(Intent(this@LoginActivity, ResetPwdActivity::class.java))
+            }
+        })
+
 
         auth = FirebaseAuth.getInstance()
 

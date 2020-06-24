@@ -1,10 +1,13 @@
 package com.techtown.breadchatapp.fragment
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -27,6 +30,8 @@ class UserListFragment : Fragment() {
 
     lateinit var mGlideRequestManager : RequestManager
 
+    lateinit var searchBar : EditText
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -39,6 +44,22 @@ class UserListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         mGlideRequestManager = Glide.with(this)
+
+        searchBar = view.findViewById(R.id.search_bar)
+        searchBar.addTextChangedListener(object : TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                searchUsers(s.toString())
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+        })
+
 
         mUsers = ArrayList()
 
@@ -83,5 +104,39 @@ class UserListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         mUsers.clear()
+    }
+
+    private fun searchUsers(str : String){
+        val fuser = FirebaseAuth.getInstance().currentUser
+        var query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("username")
+            .startAt(str)
+            .endAt(str+"\uf0ff")
+
+
+        query.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapShot: DataSnapshot) {
+                if(searchBar.text.toString().equals("")) {
+
+                    mUsers.clear()
+                    for (snapShot in dataSnapShot.children) {
+                        var user = snapShot.getValue(User::class.java)
+
+                        assert(user != null)
+                        assert(fuser != null)
+                        if (!user?.id.equals(fuser?.uid)) {
+                            mUsers.add(user!!)
+                        }
+                    }
+
+                    userAdapter = UserAdapter(context, mUsers, false, mGlideRequestManager)
+                    recyclerView.adapter = userAdapter
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
+
     }
 }

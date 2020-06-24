@@ -15,6 +15,7 @@ import com.google.firebase.database.*
 import com.techtown.breadchatapp.R
 import com.techtown.breadchatapp.adapter.UserAdapter
 import com.techtown.breadchatapp.model.Chat
+import com.techtown.breadchatapp.model.Chatlist
 import com.techtown.breadchatapp.model.User
 
 
@@ -28,7 +29,7 @@ class ChatListFragment : Fragment() {
     lateinit var firebaseUser : FirebaseUser
     lateinit var reference : DatabaseReference
 
-    lateinit var usersList : ArrayList<String>
+    lateinit var usersList : ArrayList<Chatlist>
 
     lateinit var mGlideRequestManager : RequestManager
 
@@ -43,7 +44,7 @@ class ChatListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
-        reference = FirebaseDatabase.getInstance().getReference("Chats")
+        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(firebaseUser.uid)
 
         mGlideRequestManager = Glide.with(this)
 
@@ -52,51 +53,36 @@ class ChatListFragment : Fragment() {
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
                 usersList.clear()
-
                 for(snapShot in dataSnapShot.children){
-                    var chat = snapShot.getValue(Chat::class.java)
-
-                    if(chat?.sender.equals(firebaseUser.uid)){
-                        usersList.add(chat?.receiver!!)
-                    }
-
-                    if(chat?.receiver.equals(firebaseUser.uid)){
-                        usersList.add(chat?.sender!!)
-                    }
+                    var chatlist = snapShot.getValue(Chatlist::class.java)
+                    usersList.add(chatlist!!)
                 }
 
-                var hashSet = HashSet<String>(usersList) as Set<String>
-                usersList.clear()
-                usersList.addAll(hashSet)
-
-
-                readChat()
+                chatList()
             }
 
             override fun onCancelled(p0: DatabaseError) {
 
             }
         })
+
+
         return view
     }
 
-
-    private fun readChat(){
+    private fun chatList(){
         mUsers = ArrayList()
 
         reference = FirebaseDatabase.getInstance().getReference("Users")
 
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
-               // mUsers.clear()
-
+                mUsers.clear()
                 for(snapShot in dataSnapShot.children){
-                    var user = snapShot.getValue(User::class.java) as User
-
-                    for(mId in usersList) {
-                        assert(user != null)
-                        if (user.id.equals(mId)) {
-                            mUsers.add(user)
+                    var user = snapShot.getValue(User::class.java)
+                    for(chatlist in usersList){
+                        if(user?.id.equals(chatlist.id)){
+                            mUsers.add(user!!)
                         }
                     }
                 }
@@ -108,5 +94,7 @@ class ChatListFragment : Fragment() {
 
             }
         })
+
     }
+
 }
