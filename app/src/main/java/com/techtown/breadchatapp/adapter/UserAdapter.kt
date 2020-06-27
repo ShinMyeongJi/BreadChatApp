@@ -14,14 +14,20 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.techtown.breadchatapp.MainActivity
 import com.techtown.breadchatapp.MessageActivity
 import com.techtown.breadchatapp.TestActivity
+import com.techtown.breadchatapp.model.Chat
 import de.hdodenhof.circleimageview.CircleImageView
 
 class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat : Boolean, val requestManager : RequestManager) : RecyclerView.Adapter<UserAdapter.UserViewHolder>(){
 
-
+    lateinit var theLastMsg : String
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.user_item, parent, false)
@@ -50,6 +56,12 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
             holder.offlineImg.visibility = View.GONE
         }
 
+        if(ischat){
+            lastMessage(user.id, holder.last_msg)
+        }else{
+            holder.last_msg.visibility = View.GONE
+        }
+
         holder.itemView.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
               //  Toast.makeText(context, items[position].toString(), Toast.LENGTH_SHORT).show()
@@ -68,6 +80,7 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
         var userName = itemView.findViewById<TextView>(R.id.user_name)
         var onlineImg = itemView.findViewById<CircleImageView>(R.id.online)
         var offlineImg = itemView.findViewById<CircleImageView>(R.id.offline)
+        var last_msg = itemView.findViewById<TextView>(R.id.last_msg)
 
         fun bind(user : User, context : Context, requestManager : RequestManager){
             userName.text = user.username
@@ -77,8 +90,45 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
             else
                 requestManager.load(user.imageURL).into(userImg)
 
+
+
             //Glide.with(context).load(user.imageURL).into(userImg)
 
         }
+    }
+
+    private fun lastMessage(userId : String, last_msg : TextView){
+        theLastMsg = "default"
+
+        var firebaseUser = FirebaseAuth.getInstance().currentUser
+        var reference = FirebaseDatabase.getInstance().getReference("Chats")
+
+        reference.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapShot: DataSnapshot) {
+                for(snapShot in dataSnapShot.children){
+                    var chat = snapShot.getValue(Chat::class.java)
+
+                    if(
+                        chat?.receiver.equals(firebaseUser?.uid) &&
+                        chat?.sender.equals(userId) ||
+                        chat?.receiver.equals(userId) &&
+                        chat?.sender.equals(firebaseUser?.uid)
+                    ){
+                        theLastMsg = chat?.message!!
+                    }
+                }
+
+                when(theLastMsg){
+                    "default" -> last_msg.setText("No Message")
+                    else -> last_msg.setText(theLastMsg)
+                }
+
+                theLastMsg = "default"
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
     }
 }
