@@ -17,9 +17,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.techtown.breadchatapp.adapter.MessageAdapter
+import com.techtown.breadchatapp.fragment.APIService
 import com.techtown.breadchatapp.model.Chat
 import com.techtown.breadchatapp.model.User
+import com.techtown.breadchatapp.notification.*
 import de.hdodenhof.circleimageview.CircleImageView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class MessageActivity : AppCompatActivity() {
 
@@ -39,6 +44,10 @@ class MessageActivity : AppCompatActivity() {
 
     lateinit var seenListener : ValueEventListener
 
+    lateinit var apiService : APIService
+
+    var notify = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
@@ -53,6 +62,9 @@ class MessageActivity : AppCompatActivity() {
             }
         })
 
+        apiService = Client.getClient("https://fcm.googleapis.com/").create(APIService::class.java)
+
+
         profileImg = findViewById(R.id.profile_img)
         userName = findViewById(R.id.user_name)
         sendBtn = findViewById(R.id.btn_send)
@@ -65,6 +77,9 @@ class MessageActivity : AppCompatActivity() {
         recyclerView.layoutManager = linearLayoutManager
 
 
+
+
+
         var intent = intent
         var receiverId = intent.getStringExtra("userId")
 
@@ -72,6 +87,7 @@ class MessageActivity : AppCompatActivity() {
 
         sendBtn.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
+                notify = true
                 var msg = msgSendBox.text.toString()
                 if(!msg.equals("")) {
                     sendMessage(firebaseUser.uid, receiverId, msgSendBox.text.toString())
@@ -152,7 +168,67 @@ class MessageActivity : AppCompatActivity() {
 
             }
         })
+
+        val msg = message
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
+        reference.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapShot: DataSnapshot) {
+                var user = dataSnapShot.getValue(User::class.java)
+                if(notify) {
+                    sendNotification(receiver, user?.username!!, msg)
+                }
+                notify = false
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
     }
+
+    private fun sendNotification(receiver : String, username : String, msg : String){
+        var tokens = FirebaseDatabase.getInstance().getReference("Tokens")
+        var query = tokens.orderByKey().equalTo(receiver)
+        query.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var token = dataSnapshot.getValue(Token::class.java)
+
+                var data = Data(
+                    firebaseUser.uid,
+                    R.mipmap.ic_launcher,
+                    username + ": " + msg,
+                    "새 메시지",
+                    receiver
+                    )
+
+                var sender = Sender(data, token?.token!!)
+
+                apiService.sendNotification(sender)
+                    .enqueue(object : Callback<MyResponse>{
+                        override fun onResponse(
+                            call: Call<MyResponse>,
+                            response: Response<MyResponse>
+                        ) {
+                            if(response.code() == 200){
+                                if(response.body()?.success != "1"){
+                                    Toast.makeText(this@MessageActivity, "실패", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        }
+
+                        override fun onFailure(call: Call<MyResponse>, t: Throwable) {
+
+                        }
+                    })
+
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
+    }
+
 
     private fun readMessage(myId : String, receiverId : String, imgURL : String){
         mchat = ArrayList()

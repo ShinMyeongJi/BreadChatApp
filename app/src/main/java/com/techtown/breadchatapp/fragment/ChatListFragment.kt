@@ -12,11 +12,12 @@ import com.bumptech.glide.RequestManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import com.google.firebase.iid.FirebaseInstanceId
 import com.techtown.breadchatapp.R
 import com.techtown.breadchatapp.adapter.UserAdapter
-import com.techtown.breadchatapp.model.Chat
 import com.techtown.breadchatapp.model.Chatlist
 import com.techtown.breadchatapp.model.User
+import com.techtown.breadchatapp.notification.Token
 
 
 class ChatListFragment : Fragment() {
@@ -66,9 +67,19 @@ class ChatListFragment : Fragment() {
             }
         })
 
+        updateToken(FirebaseInstanceId.getInstance().token!!)
 
         return view
     }
+
+    private fun updateToken(token : String){
+        var tokens = FirebaseDatabase.getInstance().getReference("Tokens")
+
+        var token = Token(tokens.toString())
+        tokens.child(firebaseUser.uid).setValue(token)
+    }
+
+
 
     private fun chatList(){
         mUsers = ArrayList()
