@@ -58,7 +58,7 @@ class MessageActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
-                startActivity(Intent(this@MessageActivity, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+                startActivity(Intent(this@MessageActivity, MainActivity::class.java))//.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             }
         })
 
@@ -81,7 +81,7 @@ class MessageActivity : AppCompatActivity() {
 
 
         var intent = intent
-        var receiverId = intent.getStringExtra("userId")
+        var curUserId = intent.getStringExtra("userId")
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
 
@@ -90,14 +90,14 @@ class MessageActivity : AppCompatActivity() {
                 notify = true
                 var msg = msgSendBox.text.toString()
                 if(!msg.equals("")) {
-                    sendMessage(firebaseUser.uid, receiverId, msgSendBox.text.toString())
+                    sendMessage(firebaseUser.uid, curUserId, msgSendBox.text.toString())
                     msgSendBox.setText("")
                 }
             }
         })
 
 
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(receiverId)
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(curUserId)
 
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(snapShot: DataSnapshot) {
@@ -108,7 +108,7 @@ class MessageActivity : AppCompatActivity() {
                 }else{
                     Glide.with(applicationContext).load(user?.imageURL).into(profileImg)
                 }
-                readMessage(firebaseUser.uid, receiverId, user?.imageURL!!)
+                readMessage(firebaseUser.uid, curUserId, user?.imageURL!!)
             }
 
             override fun onCancelled(p0: DatabaseError) {
@@ -116,7 +116,7 @@ class MessageActivity : AppCompatActivity() {
             }
         })
 
-        seenMessage(receiverId)
+        seenMessage(curUserId)
     }
 
     private fun seenMessage(userId : String){
@@ -143,7 +143,7 @@ class MessageActivity : AppCompatActivity() {
 
 
     private fun sendMessage(sender : String, receiver : String, message : String){
-        var reference = FirebaseDatabase.getInstance().getReference()
+        var reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
 
         var hashMap : HashMap<String, Object> = HashMap();
         hashMap.put("sender", sender as Object)
@@ -189,10 +189,10 @@ class MessageActivity : AppCompatActivity() {
     private fun sendNotification(receiver : String, username : String, msg : String){
         var tokens = FirebaseDatabase.getInstance().getReference("Tokens")
         var query = tokens.orderByKey().equalTo(receiver)
-        query.addValueEventListener(object : ValueEventListener{
+        tokens.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 var token = dataSnapshot.getValue(Token::class.java)
-
+                Toast.makeText(this@MessageActivity, token?.token, Toast.LENGTH_SHORT).show()
                 var data = Data(
                     firebaseUser.uid,
                     R.mipmap.ic_launcher,
@@ -233,7 +233,7 @@ class MessageActivity : AppCompatActivity() {
     private fun readMessage(myId : String, receiverId : String, imgURL : String){
         mchat = ArrayList()
 
-        reference = FirebaseDatabase.getInstance().getReference("Chats") // 키로 받아오기
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid).child("Chats") // 키로 받아오기
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
                 mchat.clear()
@@ -245,13 +245,13 @@ class MessageActivity : AppCompatActivity() {
                         chat.receiver.equals(receiverId) && chat.sender.equals(myId) || //or와 ||가 뭐가 다른지;;;?
                         chat.receiver.equals(myId) && chat.sender.equals(receiverId)
                     ){
-                        Toast.makeText(this@MessageActivity, chat.receiver + chat.isSeen, Toast.LENGTH_SHORT).show()
+                       // Toast.makeText(this@MessageActivity, chat.receiver + chat.isSeen, Toast.LENGTH_SHORT).show()
 
                         mchat.add(chat)
                     }
                     messageAdapter = MessageAdapter(this@MessageActivity, mchat, imgURL)
+                    messageAdapter.notifyDataSetChanged()
                     recyclerView.adapter = messageAdapter
-
                 }
             }
 

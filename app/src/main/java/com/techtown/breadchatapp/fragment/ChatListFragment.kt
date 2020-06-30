@@ -14,7 +14,9 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.google.firebase.iid.FirebaseInstanceId
 import com.techtown.breadchatapp.R
+import com.techtown.breadchatapp.adapter.ChatListAdapter
 import com.techtown.breadchatapp.adapter.UserAdapter
+import com.techtown.breadchatapp.common.CommonTableName
 import com.techtown.breadchatapp.model.Chatlist
 import com.techtown.breadchatapp.model.User
 import com.techtown.breadchatapp.notification.Token
@@ -24,7 +26,7 @@ class ChatListFragment : Fragment() {
 
     lateinit var recyclerView : RecyclerView
 
-    lateinit var userAdapter : UserAdapter
+    lateinit var userAdapter : ChatListAdapter
     lateinit var mUsers : ArrayList<User>
 
     lateinit var firebaseUser : FirebaseUser
@@ -67,7 +69,7 @@ class ChatListFragment : Fragment() {
             }
         })
 
-        updateToken(FirebaseInstanceId.getInstance().token!!)
+        //updateToken(FirebaseInstanceId.getInstance().token!!)
 
         return view
     }
@@ -84,7 +86,9 @@ class ChatListFragment : Fragment() {
     private fun chatList(){
         mUsers = ArrayList()
 
-        reference = FirebaseDatabase.getInstance().getReference("Users")
+        reference = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS).child(firebaseUser?.uid!!).child(
+            CommonTableName.FRIENDS)
+
 
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
@@ -97,7 +101,8 @@ class ChatListFragment : Fragment() {
                         }
                     }
                 }
-                userAdapter = UserAdapter(context, mUsers, true, mGlideRequestManager)
+                userAdapter = ChatListAdapter(context, mUsers, true, mGlideRequestManager)
+                userAdapter.notifyDataSetChanged()
                 recyclerView.adapter = userAdapter
             }
 

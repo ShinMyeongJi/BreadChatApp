@@ -23,9 +23,9 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
 
         var firebaseUser = FirebaseAuth.getInstance().currentUser
 
-        if(firebaseUser != null && sented.equals(firebaseUser.uid)){
+      //  if(firebaseUser != null && sented.equals(firebaseUser.uid)){
             sendNotification(remoteMessage)
-        }
+       // }
     }
 
     fun sendNotification(remoteMessage: RemoteMessage){
@@ -33,6 +33,8 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
         var icon = remoteMessage.data.get("icon")
         var title = remoteMessage.data.get("title")
         var body = remoteMessage.data.get("body")
+
+
 
         var channelId = "chatNoti"
 

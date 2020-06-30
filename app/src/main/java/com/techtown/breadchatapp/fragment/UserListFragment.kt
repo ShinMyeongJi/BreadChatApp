@@ -3,11 +3,13 @@ package com.techtown.breadchatapp.fragment
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -17,9 +19,11 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.techtown.breadchatapp.MainActivity
 
 import com.techtown.breadchatapp.R
 import com.techtown.breadchatapp.adapter.UserAdapter
+import com.techtown.breadchatapp.common.CommonTableName
 import com.techtown.breadchatapp.model.User
 
 class UserListFragment : Fragment() {
@@ -63,14 +67,14 @@ class UserListFragment : Fragment() {
 
         mUsers = ArrayList()
 
-        readUsers()
+
 
         return view
     }
 
     private fun readUsers(){
         var firebaseUser = FirebaseAuth.getInstance().currentUser
-        var reference = FirebaseDatabase.getInstance().getReference("Users")
+        var reference = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS).child(firebaseUser?.uid!!).child(CommonTableName.FRIENDS)
 
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
@@ -80,14 +84,14 @@ class UserListFragment : Fragment() {
 
                     assert(user != null)
                     assert(firebaseUser != null)
-                    if(!(user?.id.equals(firebaseUser?.uid))){
-                        mUsers.add(user!!)
-                    }
+                    mUsers.add(user!!)
                 }
 
-                userAdapter = UserAdapter(context, mUsers, false, mGlideRequestManager)
 
+                userAdapter = UserAdapter(activity, mUsers, false, mGlideRequestManager)
+                userAdapter.notifyDataSetChanged()
                 recyclerView.adapter = userAdapter
+
             }
 
             override fun onCancelled(p0: DatabaseError) {
@@ -98,13 +102,13 @@ class UserListFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        mUsers.clear()
     }
 
     override fun onResume() {
         super.onResume()
-        mUsers.clear()
+        readUsers()
     }
+
 
     private fun searchUsers(str : String){
         val fuser = FirebaseAuth.getInstance().currentUser

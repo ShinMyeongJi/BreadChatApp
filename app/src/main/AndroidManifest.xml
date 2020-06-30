@@ -13,8 +13,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ResetPwdActivity"
-            android:parentActivityName=".LoginActivity"></activity>
+        <service
+            android:name=".notification.MyFirebaseIdService"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="true">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <service android:name=".notification.MyFirebaseMessaging">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".ResetPwdActivity"
+            android:parentActivityName=".LoginActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".MessageActivity" />
@@ -33,21 +51,6 @@
             android:parentActivityName=".StartActivity" />
         <activity android:name=".MainActivity" />
 
-        <service android:name=".notification.MyFirebaseIdService"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
-            </intent-filter>
-        </service>
-
-        <service android:name=".notification.MyFirebaseMessaging"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
-            </intent-filter>
-        </service>
 
     </application>
 

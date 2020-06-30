@@ -25,20 +25,20 @@ import com.techtown.breadchatapp.TestActivity
 import com.techtown.breadchatapp.model.Chat
 import de.hdodenhof.circleimageview.CircleImageView
 
-class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat : Boolean, val requestManager : RequestManager) : RecyclerView.Adapter<UserAdapter.UserViewHolder>(){
+class ChatListAdapter(val context: Context?, val items: ArrayList<User>, val ischat : Boolean, val requestManager : RequestManager) : RecyclerView.Adapter<ChatListAdapter.ChatViewHolder>(){
 
     lateinit var theLastMsg : String
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.user_item, parent, false)
-        return UserViewHolder(view)
+        return ChatViewHolder(view)
     }
 
     override fun getItemCount(): Int {
         return items.size
     }
 
-    override fun onBindViewHolder(holder: UserViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
 
 
         val user = items[position]
@@ -77,7 +77,7 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
     }
 
 
-    class UserViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+    class ChatViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
 
         var userImg = itemView.findViewById<CircleImageView>(R.id.profile_img)
         var userName = itemView.findViewById<TextView>(R.id.user_name)
@@ -134,6 +134,7 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
             }
         })
     }
+
 
 
 }
