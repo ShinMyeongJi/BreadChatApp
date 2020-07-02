@@ -13,10 +13,12 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.techtown.breadchatapp.adapter.MessageAdapter
+import com.techtown.breadchatapp.common.CommonTableName
 import com.techtown.breadchatapp.fragment.APIService
 import com.techtown.breadchatapp.model.Chat
 import com.techtown.breadchatapp.model.User
@@ -45,6 +47,7 @@ class MessageActivity : AppCompatActivity() {
     lateinit var seenListener : ValueEventListener
 
     lateinit var apiService : APIService
+
 
     var notify = false
 
@@ -77,9 +80,6 @@ class MessageActivity : AppCompatActivity() {
         recyclerView.layoutManager = linearLayoutManager
 
 
-
-
-
         var intent = intent
         var curUserId = intent.getStringExtra("userId")
 
@@ -95,6 +95,8 @@ class MessageActivity : AppCompatActivity() {
                 }
             }
         })
+
+
 
 
         reference = FirebaseDatabase.getInstance().getReference("Users").child(curUserId)
@@ -144,6 +146,7 @@ class MessageActivity : AppCompatActivity() {
 
     private fun sendMessage(sender : String, receiver : String, message : String){
         var reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
+        var senderRf = FirebaseDatabase.getInstance().getReference("Users").child(receiver)
 
         var hashMap : HashMap<String, Object> = HashMap();
         hashMap.put("sender", sender as Object)
@@ -152,6 +155,7 @@ class MessageActivity : AppCompatActivity() {
         hashMap.put("seen", false as Object)
 
         reference.child("Chats").push().setValue(hashMap)
+        senderRf.child(CommonTableName.CHATS).push().setValue(hashMap)
 
         val chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
             .child(firebaseUser.uid)
@@ -170,14 +174,19 @@ class MessageActivity : AppCompatActivity() {
         })
 
         val msg = message
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
-        reference.addValueEventListener(object : ValueEventListener{
+        var ref = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
+        ref.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
+
                 var user = dataSnapShot.getValue(User::class.java)
-                if(notify) {
-                    sendNotification(receiver, user?.username!!, msg)
-                }
-                notify = false
+                Log.d(",,,,,,", user?.username)
+              //  Toast.makeText(this@MessageActivity, user?.username, Toast.LENGTH_SHORT).show()
+                //if(notify) {
+                sendNotification(receiver, user?.username!!, msg)
+                //}
+               // notify = false
+
+
             }
 
             override fun onCancelled(p0: DatabaseError) {
@@ -189,11 +198,13 @@ class MessageActivity : AppCompatActivity() {
     private fun sendNotification(receiver : String, username : String, msg : String){
         var tokens = FirebaseDatabase.getInstance().getReference("Tokens")
         var query = tokens.orderByKey().equalTo(receiver)
-        tokens.addValueEventListener(object : ValueEventListener{
+        query.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                var token = dataSnapshot.getValue(Token::class.java)
-                Toast.makeText(this@MessageActivity, token?.token, Toast.LENGTH_SHORT).show()
-                var data = Data(
+                for(snapshot in dataSnapshot.children) {
+                    var token = snapshot.getValue(Token::class.java)
+                    Toast.makeText(this@MessageActivity, token?.token, Toast.LENGTH_SHORT).show()
+
+                    var data = Data(
                     firebaseUser.uid,
                     R.mipmap.ic_launcher,
                     username + ": " + msg,
@@ -201,26 +212,32 @@ class MessageActivity : AppCompatActivity() {
                     receiver
                     )
 
-                var sender = Sender(data, token?.token!!)
+                    var notification = Notification(
+                        msg,
+                        username
+                    )
 
-                apiService.sendNotification(sender)
-                    .enqueue(object : Callback<MyResponse>{
-                        override fun onResponse(
-                            call: Call<MyResponse>,
-                            response: Response<MyResponse>
-                        ) {
-                            if(response.code() == 200){
-                                if(response.body()?.success != "1"){
-                                    Toast.makeText(this@MessageActivity, "실패", Toast.LENGTH_SHORT).show()
+                    var sender = Sender(notification, token?.token!!)
+                    Log.d(",,,", ObjectMapper().writeValueAsString(sender))
+
+                    apiService.sendNotification(sender)
+                        .enqueue(object : Callback<MyResponse>{
+                            override fun onResponse(
+                                call: Call<MyResponse>,
+                                response: Response<MyResponse>
+                            ) {
+                                if(response.code() == 200){
+                                    if(response.body()?.success == 1){
+                                        Toast.makeText(this@MessageActivity, "실패", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                             }
-                        }
 
-                        override fun onFailure(call: Call<MyResponse>, t: Throwable) {
+                            override fun onFailure(call: Call<MyResponse>, t: Throwable) {
 
-                        }
+                            }
                     })
-
+                }
             }
 
             override fun onCancelled(p0: DatabaseError) {

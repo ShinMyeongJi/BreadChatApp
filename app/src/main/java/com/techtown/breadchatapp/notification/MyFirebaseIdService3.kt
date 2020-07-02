@@ -1,12 +1,8 @@
 package com.techtown.breadchatapp.notification
 
 import android.util.Log
-import android.widget.Toast
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.iid.FirebaseInstanceId
-import com.google.firebase.iid.InstanceIdResult
 import com.google.firebase.messaging.FirebaseMessagingService
 
 class MyFirebaseIdService3 : FirebaseMessagingService() {

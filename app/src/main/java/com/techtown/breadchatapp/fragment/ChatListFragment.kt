@@ -12,10 +12,8 @@ import com.bumptech.glide.RequestManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
-import com.google.firebase.iid.FirebaseInstanceId
 import com.techtown.breadchatapp.R
 import com.techtown.breadchatapp.adapter.ChatListAdapter
-import com.techtown.breadchatapp.adapter.UserAdapter
 import com.techtown.breadchatapp.common.CommonTableName
 import com.techtown.breadchatapp.model.Chatlist
 import com.techtown.breadchatapp.model.User

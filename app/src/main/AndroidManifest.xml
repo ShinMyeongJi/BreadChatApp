@@ -24,11 +24,14 @@
             </intent-filter>
         </service>
 
-        <service android:name=".notification.MyFirebaseMessaging">
+        <!--<service android:name=".notification.MyFirebaseMessaging"
+            android:enabled="true"
+            android:exported="true"
+            android:stopWithTask="true">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
-        </service>
+        </service>-->
 
         <activity
             android:name=".ResetPwdActivity"

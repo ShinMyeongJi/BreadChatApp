@@ -1,7 +1,7 @@
 package com.techtown.breadchatapp.notification
 
 class MyResponse(
-    var success : String
+    var success : Int
 ) {
-    constructor() : this("")
+    constructor() : this(-1)
 }
