@@ -1,6 +1,6 @@
 package com.techtown.breadchatapp.notification
 
-class Sender(
+class Sender2(
     var data: Data?,
     var to: String
 ){

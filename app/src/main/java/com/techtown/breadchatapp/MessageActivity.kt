@@ -122,8 +122,28 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun seenMessage(userId : String){
-        reference = FirebaseDatabase.getInstance().getReference("Chats")
-        seenListener = reference.addValueEventListener(object : ValueEventListener{
+        var receiver = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS).child(firebaseUser.uid).child(CommonTableName.CHATS)
+        var sender = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS).child(userId).child(CommonTableName.CHATS)
+        seenListener = receiver.addValueEventListener(object : ValueEventListener{
+            override fun onDataChange(dataSnapShot: DataSnapshot) {
+                for(snapShot in dataSnapShot.children){
+                    var chat = snapShot.getValue(Chat::class.java)
+
+                    if(chat?.receiver.equals(firebaseUser.uid) && chat?.sender.equals(userId)){
+                        var hashMap : HashMap<String, Object> = HashMap()
+                        hashMap.put("seen", true as Object)
+                        snapShot.ref.updateChildren(hashMap as Map<String, Any>)
+                    }
+
+                }
+            }
+
+            override fun onCancelled(p0: DatabaseError) {
+
+            }
+        })
+
+        sender.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
                 for(snapShot in dataSnapShot.children){
                     var chat = snapShot.getValue(Chat::class.java)
@@ -143,10 +163,13 @@ class MessageActivity : AppCompatActivity() {
         })
     }
 
-
+    /**
+     * receiver : 받는 사람 (나)
+     * sender : 발신자 (상대방)
+     */
     private fun sendMessage(sender : String, receiver : String, message : String){
-        var reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
-        var senderRf = FirebaseDatabase.getInstance().getReference("Users").child(receiver)
+        var senderReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
+        var receiverReference = FirebaseDatabase.getInstance().getReference("Users").child(receiver)
 
         var hashMap : HashMap<String, Object> = HashMap();
         hashMap.put("sender", sender as Object)
@@ -154,12 +177,12 @@ class MessageActivity : AppCompatActivity() {
         hashMap.put("message", message as Object)
         hashMap.put("seen", false as Object)
 
-        reference.child("Chats").push().setValue(hashMap)
-        senderRf.child(CommonTableName.CHATS).push().setValue(hashMap)
+        senderReference.child(CommonTableName.CHATS).push().setValue(hashMap)
+        receiverReference.child(CommonTableName.CHATS).push().setValue(hashMap)
 
-        val chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+        val chatRef = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS)
             .child(firebaseUser.uid)
-            .child(receiver)
+            .child("Chatlist")
 
         chatRef.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -173,22 +196,19 @@ class MessageActivity : AppCompatActivity() {
             }
         })
 
+
+
         val msg = message
         var ref = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
         ref.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
 
                 var user = dataSnapShot.getValue(User::class.java)
-                Log.d(",,,,,,", user?.username)
-              //  Toast.makeText(this@MessageActivity, user?.username, Toast.LENGTH_SHORT).show()
-                //if(notify) {
-                sendNotification(receiver, user?.username!!, msg)
-                //}
-               // notify = false
-
-
+                if(notify) {
+                    sendNotification(receiver, user?.username!!, msg)
+                }
+                notify = false
             }
-
             override fun onCancelled(p0: DatabaseError) {
 
             }
@@ -218,7 +238,6 @@ class MessageActivity : AppCompatActivity() {
                     )
 
                     var sender = Sender(notification, token?.token!!)
-                    Log.d(",,,", ObjectMapper().writeValueAsString(sender))
 
                     apiService.sendNotification(sender)
                         .enqueue(object : Callback<MyResponse>{
@@ -257,12 +276,10 @@ class MessageActivity : AppCompatActivity() {
                 for(snapShot in dataSnapShot.children){
 
                     var chat = snapShot.getValue(Chat::class.java)!!
-
                     if(
                         chat.receiver.equals(receiverId) && chat.sender.equals(myId) || //or와 ||가 뭐가 다른지;;;?
                         chat.receiver.equals(myId) && chat.sender.equals(receiverId)
                     ){
-                       // Toast.makeText(this@MessageActivity, chat.receiver + chat.isSeen, Toast.LENGTH_SHORT).show()
 
                         mchat.add(chat)
                     }

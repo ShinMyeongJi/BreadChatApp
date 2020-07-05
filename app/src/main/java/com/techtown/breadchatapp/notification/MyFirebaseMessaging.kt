@@ -22,7 +22,6 @@ class MyFirebaseMessaging : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        Log.d(",,,,", remoteMessage.notification?.body)
         var sented = remoteMessage.data.get("sented")
 
         var firebaseUser = FirebaseAuth.getInstance().currentUser

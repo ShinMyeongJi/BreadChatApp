@@ -48,7 +48,7 @@ class MessageAdapter(
         holder.bind(msgs.get(position), context, imgURL)
 
         if(position == msgs.size-1){
-           // Toast.makeText(context,chat.message + "  " + chat.isSeen.toString(), Toast.LENGTH_SHORT).show()
+      //      Toast.makeText(context,chat.message + "  " + chat.isSeen.toString(), Toast.LENGTH_SHORT).show()
             if(chat.isSeen){
                 holder.isSeen.setText("읽음")
             }else{

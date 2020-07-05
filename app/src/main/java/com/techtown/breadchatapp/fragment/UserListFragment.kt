@@ -50,13 +50,27 @@ class UserListFragment : Fragment() {
         mGlideRequestManager = Glide.with(this)
 
         searchBar = view.findViewById(R.id.search_bar)
-        searchBar.addTextChangedListener(object : TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+        searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(
+                s: CharSequence?,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
 
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                searchUsers(s.toString())
+                if(!s.toString().isEmpty()){
+                    searchUsers(s.toString())
+                }else{
+                    if(!s.toString().equals("")){
+
+                    }else if(s.toString().equals("")){
+                       Toast.makeText(context, "호출", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -112,14 +126,17 @@ class UserListFragment : Fragment() {
 
     private fun searchUsers(str : String){
         val fuser = FirebaseAuth.getInstance().currentUser
-        var query = FirebaseDatabase.getInstance().getReference("Users").orderByChild("username")
+        var query = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS)
+            .child(fuser?.uid!!)
+            .child(CommonTableName.FRIENDS)
+            .orderByChild("username")
             .startAt(str)
             .endAt(str+"\uf0ff")
 
 
         query.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
-                if(searchBar.text.toString().equals("")) {
+                if(searchBar.text.toString().isNotEmpty()) {
 
                     mUsers.clear()
                     for (snapShot in dataSnapShot.children) {
@@ -141,6 +158,5 @@ class UserListFragment : Fragment() {
 
             }
         })
-
     }
 }

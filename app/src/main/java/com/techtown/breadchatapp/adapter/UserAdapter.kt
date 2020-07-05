@@ -66,7 +66,6 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
         holder.itemView.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
 
-
                 var intent = Intent(context, MessageActivity::class.java)
                 intent.putExtra("userId", items[position].id)
 

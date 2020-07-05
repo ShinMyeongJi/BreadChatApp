@@ -89,7 +89,6 @@ class MainActivity : AppCompatActivity() {
                     profileImg.setImageResource(R.drawable.bread_no_img)
                 }else{
                     mGlideRequestManager.load(user?.imageURL).into(profileImg)
-                    //Glide.with(this@MainActivity).load(user?.imageURL).into(profileImg)
                 }
             }
 

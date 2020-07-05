@@ -45,7 +45,10 @@ class ChatListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(context)
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
-        reference = FirebaseDatabase.getInstance().getReference("Chatlist").child(firebaseUser.uid)
+        reference = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS)
+            .child(firebaseUser.uid)
+            .child("Chatlist")
+
 
         mGlideRequestManager = Glide.with(this)
 
@@ -54,10 +57,10 @@ class ChatListFragment : Fragment() {
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
                 usersList.clear()
-                for(snapShot in dataSnapShot.children){
-                    var chatlist = snapShot.getValue(Chatlist::class.java)
+                var chatlist = dataSnapShot.getValue(Chatlist::class.java)
+
+                if(chatlist != null)
                     usersList.add(chatlist!!)
-                }
 
                 chatList()
             }

@@ -11,7 +11,6 @@ class MyFirebaseIdService3 : FirebaseMessagingService() {
         super.onNewToken(token)
 
         var firebaseUser = FirebaseAuth.getInstance().currentUser
-        Log.d("====================", firebaseUser?.uid)
         /*var refreshToken = FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener{
             task ->
              if(firebaseUser != null) updateToken(task.token)
@@ -24,7 +23,6 @@ class MyFirebaseIdService3 : FirebaseMessagingService() {
 
     private fun updateToken(refreshToken : String){
         var firebaseUser = FirebaseAuth.getInstance().currentUser
-        Log.d("====================", firebaseUser?.uid)
 
         var reference = FirebaseDatabase.getInstance().getReference("Tokens")
         var token = Token(refreshToken)
