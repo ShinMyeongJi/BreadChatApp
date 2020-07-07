@@ -69,5 +69,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:20.2.1'
 
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
+    implementation group: 'com.fasterxml.uuid', name: 'java-uuid-generator', version: '3.1.0'
 
 }

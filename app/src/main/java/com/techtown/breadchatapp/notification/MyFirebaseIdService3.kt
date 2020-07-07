@@ -15,7 +15,6 @@ class MyFirebaseIdService3 : FirebaseMessagingService() {
             task ->
              if(firebaseUser != null) updateToken(task.token)
         }*/
-     //   Toast.makeText(applicationContext, firebaseUser?.uid, Toast.LENGTH_SHORT).show()
       //  if(firebaseUser != null){
             updateToken(token)
        // }

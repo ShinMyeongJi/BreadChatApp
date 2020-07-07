@@ -13,7 +13,10 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.fasterxml.jackson.annotation.ObjectIdGenerators
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.uuid.UUIDGenerator
+import com.fasterxml.uuid.UUIDTimer
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -27,6 +30,9 @@ import de.hdodenhof.circleimageview.CircleImageView
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class MessageActivity : AppCompatActivity() {
 
@@ -96,9 +102,6 @@ class MessageActivity : AppCompatActivity() {
             }
         })
 
-
-
-
         reference = FirebaseDatabase.getInstance().getReference("Users").child(curUserId)
 
         reference.addValueEventListener(object : ValueEventListener{
@@ -122,36 +125,21 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun seenMessage(userId : String){
-        var receiver = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS).child(firebaseUser.uid).child(CommonTableName.CHATS)
-        var sender = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS).child(userId).child(CommonTableName.CHATS)
-        seenListener = receiver.addValueEventListener(object : ValueEventListener{
+        var receiver = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS).child(userId).child(CommonTableName.CHATS)
+        var sender = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS).child(firebaseUser.uid).child(CommonTableName.CHATS)
+        seenListener = sender.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
                 for(snapShot in dataSnapShot.children){
                     var chat = snapShot.getValue(Chat::class.java)
 
-                    if(chat?.receiver.equals(firebaseUser.uid) && chat?.sender.equals(userId)){
-                        var hashMap : HashMap<String, Object> = HashMap()
-                        hashMap.put("seen", true as Object)
-                        snapShot.ref.updateChildren(hashMap as Map<String, Any>)
-                    }
+                    if(!chat?.isSend!!) {
+                        if (chat?.receiver.equals(userId) && chat?.sender.equals(firebaseUser.uid)) {
+                            var hashMap: HashMap<String, Object> = HashMap()
+                            hashMap.put("seen", true as Object)
+                            snapShot.ref.updateChildren(hashMap as Map<String, Any>)
 
-                }
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-        })
-
-        sender.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(dataSnapShot: DataSnapshot) {
-                for(snapShot in dataSnapShot.children){
-                    var chat = snapShot.getValue(Chat::class.java)
-
-                    if(chat?.receiver.equals(firebaseUser.uid) && chat?.sender.equals(userId)){
-                        var hashMap : HashMap<String, Object> = HashMap()
-                        hashMap.put("seen", true as Object)
-                        snapShot.ref.updateChildren(hashMap as Map<String, Any>)
+                            receiver.child(snapShot.key!!).updateChildren(hashMap as Map<String, Any>)
+                        }
                     }
 
                 }
@@ -164,11 +152,11 @@ class MessageActivity : AppCompatActivity() {
     }
 
     /**
-     * receiver : 받는 사람 (나)
-     * sender : 발신자 (상대방)
+     * receiver : 발신자 (상대방)
+     * sender : 받는 사람 (나)
      */
     private fun sendMessage(sender : String, receiver : String, message : String){
-        var senderReference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
+        var senderReference = FirebaseDatabase.getInstance().getReference("Users").child(sender)
         var receiverReference = FirebaseDatabase.getInstance().getReference("Users").child(receiver)
 
         var hashMap : HashMap<String, Object> = HashMap();
@@ -176,9 +164,19 @@ class MessageActivity : AppCompatActivity() {
         hashMap.put("receiver", receiver as Object)
         hashMap.put("message", message as Object)
         hashMap.put("seen", false as Object)
+        hashMap.put("send", true as Object) //내거
 
-        senderReference.child(CommonTableName.CHATS).push().setValue(hashMap)
-        receiverReference.child(CommonTableName.CHATS).push().setValue(hashMap)
+        var uuid = System.currentTimeMillis().toString()
+        senderReference.child(CommonTableName.CHATS).child(uuid).setValue(hashMap)
+
+        var recehash : HashMap<String, Object> = HashMap();
+        recehash.put("sender", receiver as Object)
+        recehash.put("receiver", sender as Object)
+        recehash.put("message", message as Object)
+        recehash.put("seen", false as Object)
+        recehash.put("send", false as Object)
+
+        receiverReference.child(CommonTableName.CHATS).child(uuid).setValue(recehash)
 
         val chatRef = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS)
             .child(firebaseUser.uid)
@@ -199,6 +197,7 @@ class MessageActivity : AppCompatActivity() {
 
 
         val msg = message
+
         var ref = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
         ref.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {
@@ -222,7 +221,6 @@ class MessageActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 for(snapshot in dataSnapshot.children) {
                     var token = snapshot.getValue(Token::class.java)
-                    Toast.makeText(this@MessageActivity, token?.token, Toast.LENGTH_SHORT).show()
 
                     var data = Data(
                     firebaseUser.uid,

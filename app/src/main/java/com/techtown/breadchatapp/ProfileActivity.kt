@@ -69,7 +69,6 @@ class ProfileActivity : AppCompatActivity() {
                 if(user?.imageURL.equals("default")){
                     profile_img.setImageResource(R.drawable.bread_no_img)
                 }else{
-                    Toast.makeText(this@ProfileActivity, user?.imageURL, Toast.LENGTH_SHORT).show()
                     Glide.with(this@ProfileActivity).load(user?.imageURL).into(profile_img)
                 }
             }

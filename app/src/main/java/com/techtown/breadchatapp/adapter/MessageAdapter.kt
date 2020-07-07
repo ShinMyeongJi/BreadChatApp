@@ -48,7 +48,6 @@ class MessageAdapter(
         holder.bind(msgs.get(position), context, imgURL)
 
         if(position == msgs.size-1){
-      //      Toast.makeText(context,chat.message + "  " + chat.isSeen.toString(), Toast.LENGTH_SHORT).show()
             if(chat.isSeen){
                 holder.isSeen.setText("읽음")
             }else{
@@ -80,7 +79,7 @@ class MessageAdapter(
     override fun getItemViewType(position: Int): Int {
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
 
-        if(msgs.get(position).sender.equals(firebaseUser.uid)){
+        if(msgs.get(position).isSend){
             return MSG_TITLE_SENDER
         }else{
             return MSG_TITLE_RECEIVER
