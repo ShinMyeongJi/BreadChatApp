@@ -68,7 +68,7 @@ class UserListFragment : Fragment() {
                     if(!s.toString().equals("")){
 
                     }else if(s.toString().equals("")){
-                       Toast.makeText(context, "호출", Toast.LENGTH_SHORT).show()
+
                     }
                 }
             }

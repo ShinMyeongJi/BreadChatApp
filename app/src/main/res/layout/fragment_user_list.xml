@@ -7,11 +7,17 @@
 
     <EditText
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
+        android:layout_margin="15dp"
+        android:paddingLeft="10dp"
         android:outlineAmbientShadowColor="@color/colorPrimaryDark"
-        android:layout_margin="5dp"
         android:hint="검색하기"
-        android:id="@+id/search_bar"/>
+        android:textSize="15sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:textCursorDrawable="@drawable/cursor_color"
+        android:id="@+id/search_bar"
+        android:background="@drawable/search_edit"/>
     
     <androidx.recyclerview.widget.RecyclerView
         android:layout_below="@+id/search_bar"

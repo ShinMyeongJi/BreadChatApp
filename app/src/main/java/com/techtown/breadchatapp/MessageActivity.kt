@@ -224,8 +224,8 @@ class MessageActivity : AppCompatActivity() {
 
                     var data = Data(
                     firebaseUser.uid,
-                    R.mipmap.ic_launcher,
-                    username + ": " + msg,
+                    R.drawable.bread_no_img,
+                    username + " : " + msg,
                     "새 메시지",
                     receiver
                     )
@@ -235,7 +235,7 @@ class MessageActivity : AppCompatActivity() {
                         username
                     )
 
-                    var sender = Sender(notification, token?.token!!)
+                    var sender = Sender(notification, token?.token!!, data)
 
                     apiService.sendNotification(sender)
                         .enqueue(object : Callback<MyResponse>{

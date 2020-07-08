@@ -22,6 +22,7 @@ import com.google.firebase.database.ValueEventListener
 import com.techtown.breadchatapp.MainActivity
 import com.techtown.breadchatapp.MessageActivity
 import com.techtown.breadchatapp.TestActivity
+import com.techtown.breadchatapp.common.CommonTableName
 import com.techtown.breadchatapp.model.Chat
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -103,7 +104,9 @@ class UserAdapter(val context: Context?, val items: ArrayList<User>, val ischat 
         theLastMsg = "default"
 
         var firebaseUser = FirebaseAuth.getInstance().currentUser
-        var reference = FirebaseDatabase.getInstance().getReference("Chats")
+        var reference = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS)
+            .child(firebaseUser?.uid!!)
+            .child(CommonTableName.CHATS)
 
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {

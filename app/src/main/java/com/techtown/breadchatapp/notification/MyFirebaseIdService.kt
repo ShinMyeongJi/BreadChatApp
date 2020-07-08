@@ -7,7 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
+import android.util.Log
+import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -39,6 +42,9 @@ class MyFirebaseIdService : FirebaseMessagingService(){
 
     fun sendNotification(remoteMessage: RemoteMessage) {
 
+
+        var icon = remoteMessage.data.get("icon")
+
         var intent = Intent(this, MessageActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -51,15 +57,11 @@ class MyFirebaseIdService : FirebaseMessagingService(){
 
         var notificationBuilder = NotificationCompat.Builder(this, channelId)
         notificationBuilder.setSmallIcon(R.mipmap.ic_launcher)
-
+            .setSmallIcon(icon?.toInt()!!)
             .setContentTitle("FCM Message")
-
             .setContentText(remoteMessage.notification!!.body)
-
             .setAutoCancel(true)
-
             .setSound(defaultSoundUri)
-
             .setContentIntent(pendingIntent);
 
 
