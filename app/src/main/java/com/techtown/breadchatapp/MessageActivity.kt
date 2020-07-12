@@ -206,7 +206,7 @@ class MessageActivity : AppCompatActivity() {
                 if(notify) {
                     sendNotification(receiver, user?.username!!, msg)
                 }
-                notify = false
+                //notify = false
             }
             override fun onCancelled(p0: DatabaseError) {
 
@@ -225,8 +225,8 @@ class MessageActivity : AppCompatActivity() {
                     var data = Data(
                     firebaseUser.uid,
                     R.drawable.bread_no_img,
-                    username + " : " + msg,
-                    "새 메시지",
+                    msg,
+                    username,
                     receiver
                     )
 
@@ -235,7 +235,7 @@ class MessageActivity : AppCompatActivity() {
                         username
                     )
 
-                    var sender = Sender(notification, token?.token!!, data)
+                    var sender = Sender(notification, token?.token!!, data) //
 
                     apiService.sendNotification(sender)
                         .enqueue(object : Callback<MyResponse>{

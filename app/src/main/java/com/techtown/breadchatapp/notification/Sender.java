@@ -8,7 +8,7 @@ public class Sender {
     public Sender() {
     }
 
-    public Sender(Notification notification, String to, Data data) {
+    public Sender(Notification notification, String to, Data data) { //
         this.notification = notification;
         this.to = to;
         this.data = data;
