@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "14714264322",
+    "firebase_url": "https://breadchatapp.firebaseio.com",
+    "project_id": "breadchatapp",
+    "storage_bucket": "breadchatapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14714264322:android:ff93c9a772baf79c43c01b",
+        "android_client_info": {
+          "package_name": "com.techtown.breadchatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "14714264322-k935upvv5vigaacf9qojttl7p56fojgt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.techtown.breadchatapp",
+            "certificate_hash": "93cc842dd4e57d3eb0c0d6c27c126136df91cd1d"
+          }
+        },
+        {
+          "client_id": "14714264322-qt0fcu6if1nbebl90dfbaq5lcv3h9ebr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB45m2DeQi-qRl5TopjoXVkN8h7clQxmGE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "14714264322-qt0fcu6if1nbebl90dfbaq5lcv3h9ebr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
