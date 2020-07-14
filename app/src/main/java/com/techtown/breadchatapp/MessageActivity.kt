@@ -245,7 +245,7 @@ class MessageActivity : AppCompatActivity() {
                             ) {
                                 if(response.code() == 200){
                                     if(response.body()?.success == 1){
-                                        Toast.makeText(this@MessageActivity, "실패", Toast.LENGTH_SHORT).show()
+
                                     }
                                 }
                             }
@@ -309,6 +309,11 @@ class MessageActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         reference.removeEventListener(seenListener)
+        status("offline")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         status("offline")
     }
 }
