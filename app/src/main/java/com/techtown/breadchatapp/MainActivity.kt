@@ -124,11 +124,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        status("online")
+        //status("online")
     }
 
     override fun onPause() {
         super.onPause()
-        status("offline")
+        //status("offline")
     }
 }

@@ -54,7 +54,7 @@ class MessageActivity : AppCompatActivity() {
 
     lateinit var apiService : APIService
 
-
+    lateinit var curUserId : String
     var notify = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,7 +87,7 @@ class MessageActivity : AppCompatActivity() {
 
 
         var intent = intent
-        var curUserId = intent.getStringExtra("userId")
+        curUserId = intent.getStringExtra("userId")
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
 
@@ -294,11 +294,18 @@ class MessageActivity : AppCompatActivity() {
     }
 
     private fun status(status : String){
+
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
+        var toFriends = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS)
+            .child(curUserId)
+            .child(CommonTableName.FRIENDS)
+            .child(firebaseUser.uid)
+
         var hashMap : HashMap<String, Object> = HashMap()
 
         hashMap.put("status", status as Object)
         reference.updateChildren(hashMap as Map<String, Any>)
+        toFriends.updateChildren(hashMap as Map<String, Any>)
     }
 
     override fun onResume() {
@@ -312,8 +319,5 @@ class MessageActivity : AppCompatActivity() {
         status("offline")
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        status("offline")
-    }
+
 }
