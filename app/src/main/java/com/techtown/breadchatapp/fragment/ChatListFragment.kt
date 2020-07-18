@@ -87,9 +87,7 @@ class ChatListFragment : Fragment() {
     private fun chatList(){
         mUsers = ArrayList()
 
-        reference = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS).child(firebaseUser?.uid!!).child(
-            CommonTableName.FRIENDS)
-
+        reference = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS)
 
         reference.addValueEventListener(object : ValueEventListener{
             override fun onDataChange(dataSnapShot: DataSnapshot) {

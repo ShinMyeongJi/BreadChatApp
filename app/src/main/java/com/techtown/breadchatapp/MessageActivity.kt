@@ -67,7 +67,7 @@ class MessageActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
-                startActivity(Intent(this@MessageActivity, MainActivity::class.java))//.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(Intent(this@MessageActivity, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             }
         })
 
@@ -296,16 +296,12 @@ class MessageActivity : AppCompatActivity() {
     private fun status(status : String){
 
         reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
-        var toFriends = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS)
-            .child(curUserId)
-            .child(CommonTableName.FRIENDS)
-            .child(firebaseUser.uid)
+
 
         var hashMap : HashMap<String, Object> = HashMap()
 
         hashMap.put("status", status as Object)
         reference.updateChildren(hashMap as Map<String, Any>)
-        toFriends.updateChildren(hashMap as Map<String, Any>)
     }
 
     override fun onResume() {

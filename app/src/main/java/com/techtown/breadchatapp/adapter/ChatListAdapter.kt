@@ -95,11 +95,6 @@ class ChatListAdapter(val context: Context?, val items: ArrayList<User>, val isc
                 userImg.setImageResource(R.drawable.bread_no_img)
             else
                 requestManager.load(user.imageURL).into(userImg)
-
-
-
-            //Glide.with(context).load(user.imageURL).into(userImg)
-
         }
     }
 

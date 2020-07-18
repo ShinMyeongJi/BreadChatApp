@@ -30,6 +30,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var firebaseUser : FirebaseUser
     lateinit var reference : DatabaseReference
+    lateinit var toFriends : DatabaseReference
 
     lateinit var userListFragment : UserListFragment
     lateinit var chatListFragment : ChatListFragment
@@ -122,36 +123,6 @@ class MainActivity : AppCompatActivity() {
 
         hashMap.put("status", status as Object)
         reference.updateChildren(hashMap as Map<String, Any>)
-
-        var friends = ArrayList<String>();
-
-        var toFriends = FirebaseDatabase.getInstance().getReference(CommonTableName.USERS)
-            .child(firebaseUser.uid)
-            .child(CommonTableName.FRIENDS)
-
-        toFriends.addValueEventListener(object : ValueEventListener{
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for(snapShot in dataSnapshot.children){
-                    var user = snapShot.getValue(User::class.java)
-                    friends.add(user?.id!!)
-                }
-            }
-
-            override fun onCancelled(p0: DatabaseError) {
-
-            }
-        })
-
-        for(id in friends){
-            var user = FirebaseDatabase.getInstance()
-                .getReference(CommonTableName.USERS)
-                .child(id)
-                .child(CommonTableName.FRIENDS)
-                .child(firebaseUser.uid)
-
-            user.updateChildren(hashMap as Map<String, Any>)
-
-        }
     }
 
     override fun onResume() {
