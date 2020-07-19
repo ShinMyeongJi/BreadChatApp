@@ -45,17 +45,21 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+
+    </FrameLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/main_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:background="@color/mainMenu"
+        android:background="?android:attr/windowBackground"
         app:itemIconTint="@drawable/bottom_menu_color_selector"
-        app:menu="@menu/menu_main_bottom"
         app:labelVisibilityMode="unlabeled"
-         />
+        app:menu="@menu/menu_main_bottom"
+
+        />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
