@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:layout_below="@+id/bar_layout"
+        app:elevation="0dp"
         >
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -48,17 +49,51 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
-                        android:id="@+id/profile_img"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="50dp"
-                        android:src="@drawable/bread_no_img"
-                        app:civ_border_color="@color/colorMedium"
-                        app:civ_border_width="3dp"
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center">
 
-                        />
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="100dp"
+                            android:layout_height="100dp"
+                            android:id="@+id/profile_img"
+                            android:layout_marginTop="50dp"
+                            android:src="@drawable/bread_no_img"
+                            app:civ_border_color="@color/colorMedium"
+                            app:civ_border_width="3dp"
+                            />
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            app:civ_border_width="3dp"
+                            app:civ_border_color="@android:color/white"
+                            android:src="@color/colorPrimary"
+                            android:id="@+id/edit_back"
+                            android:layout_below="@+id/profile_img"
+                            android:layout_marginTop="-25dp"
+                            android:layout_marginLeft="-30dp"
+                            android:layout_toRightOf="@id/profile_img"
+                            android:layout_toEndOf="@id/profile_img"
+                            tools:ignore="NotSibling" />
+
+                        <ImageView
+                            android:layout_width="15dp"
+                            android:layout_height="15dp"
+                            android:id="@+id/edit"
+                            android:src="@drawable/pencil"
+                            android:layout_below="@+id/profile_img"
+                            android:layout_marginTop="-18dp"
+                            android:layout_marginLeft="-22dp"
+                            android:layout_toRightOf="@id/profile_img"
+                            android:layout_toEndOf="@id/profile_img"
+                            tools:ignore="NotSibling" />
+
+
+
+                    </RelativeLayout>
+
 
                     <TextView
                         android:id="@+id/user_name"

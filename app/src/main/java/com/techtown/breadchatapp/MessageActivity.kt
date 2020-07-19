@@ -293,26 +293,17 @@ class MessageActivity : AppCompatActivity() {
         })
     }
 
-    private fun status(status : String){
-
-        reference = FirebaseDatabase.getInstance().getReference("Users").child(firebaseUser.uid)
-
-
-        var hashMap : HashMap<String, Object> = HashMap()
-
-        hashMap.put("status", status as Object)
-        reference.updateChildren(hashMap as Map<String, Any>)
-    }
-
     override fun onResume() {
         super.onResume()
-        status("online")
     }
 
     override fun onPause() {
         super.onPause()
         reference.removeEventListener(seenListener)
-        status("offline")
+    }
+
+    override fun onBackPressed() {
+        startActivity(Intent(this@MessageActivity, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
     }
 
 

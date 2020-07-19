@@ -24,21 +24,12 @@
             </intent-filter>
         </service>
 
-        <!--<service android:name=".notification.MyFirebaseMessaging"
-            android:enabled="true"
-            android:exported="true"
-            android:stopWithTask="true">
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>-->
-
         <activity
             android:name=".ResetPwdActivity"
             android:parentActivityName=".LoginActivity" />
         <activity android:name=".TestActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".MessageActivity" />
+        <activity android:name=".MessageActivity"/>
         <activity android:name=".StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -52,7 +43,7 @@
         <activity
             android:name=".RegisterActivity"
             android:parentActivityName=".StartActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"/>
 
 
     </application>

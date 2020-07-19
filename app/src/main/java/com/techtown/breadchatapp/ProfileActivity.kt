@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.webkit.MimeTypeMap
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -21,11 +22,13 @@ import com.google.firebase.storage.*
 
 import com.techtown.breadchatapp.model.User
 import de.hdodenhof.circleimageview.CircleImageView
+import org.apache.log4j.chainsaw.Main
 import java.lang.Exception
 
 class ProfileActivity : AppCompatActivity() {
 
     lateinit var profile_img : CircleImageView
+    lateinit var edit : ImageView
     lateinit var username : TextView
 
     lateinit var referenece : DatabaseReference
@@ -48,13 +51,14 @@ class ProfileActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         toolbar.setNavigationOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
-                finish()
+                startActivity(Intent(this@ProfileActivity, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
             }
         })
 
         storageReference = FirebaseStorage.getInstance().getReference("uploads")
 
         profile_img = findViewById(R.id.profile_img)
+        edit = findViewById(R.id.edit)
         username = findViewById(R.id.user_name)
 
         firebaseUser = FirebaseAuth.getInstance().currentUser!!
@@ -78,7 +82,7 @@ class ProfileActivity : AppCompatActivity() {
             }
         })
 
-        profile_img.setOnClickListener(object : View.OnClickListener{
+        edit.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 openImage()
             }
@@ -152,5 +156,9 @@ class ProfileActivity : AppCompatActivity() {
                 uploadImage()
             }
         }
+    }
+
+    override fun onBackPressed() {
+        startActivity(Intent(this@ProfileActivity, MainActivity::class.java).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
     }
 }

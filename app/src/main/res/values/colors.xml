@@ -3,6 +3,7 @@
     <color name="colorPrimary">#F0E5DE</color>
     <color name="colorMedium">#D9D4CF</color>
     <color name="colorPrimaryDark">#7C7877</color>
+    <color name="mainMenu">#e8e7e7</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="pointColor">#ABD0CE</color>
     <color name="lightGrey">#e8e8e8</color>
