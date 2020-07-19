@@ -59,7 +59,5 @@
         app:itemIconTint="@drawable/bottom_menu_color_selector"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/menu_main_bottom"
-
         />
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
