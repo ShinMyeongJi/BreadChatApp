@@ -42,6 +42,7 @@ class MessageActivity : AppCompatActivity() {
     lateinit var firebaseUser : FirebaseUser
     lateinit var reference : DatabaseReference
 
+    lateinit var addContentBtn : ImageButton
     lateinit var sendBtn : ImageButton
     lateinit var msgSendBox : EditText
 
