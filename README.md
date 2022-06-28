@@ -14,4 +14,5 @@
 
 ## Screenshot
 * login/chat 화면
-![Image of MJ](https://github.com/ShinMyeongJi/Images/blob/master/bread_chat_app/1.PNG?raw=true)
+
+![image](https://user-images.githubusercontent.com/31172248/176182988-36e5c550-33a0-425a-9606-ca682c78d426.png)
